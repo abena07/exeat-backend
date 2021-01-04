@@ -3,7 +3,7 @@ const bookingRouter = require("express").Router();
 
 ///create a booking
 bookingRouter.post("/create", async function (request, response) {
-  console.log('creating')
+  console.log("creating");
   const studentID = request.body.studentID;
   const goingDate = request.body.goingDate;
   const returnDate = request.body.returnDate;
