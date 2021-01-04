@@ -26,7 +26,7 @@ mongoose.connect(config.MONGODB_URI,config.MONGOOSE_OPTIONS,{
 })
 
     
- app.use(studentRouter)
+app.use(studentRouter)
 app.use(bookingRouter)
 
 
