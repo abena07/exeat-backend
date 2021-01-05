@@ -53,31 +53,26 @@ studentSchema.set("toJSON", {
 });
 
 // Hash password before saving
-studentSchema.pre("save", function (next) {
-  const student = this;
+studentSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt()
+  this.password = await bcrypt.hash(this.password, salt)
+  next()
+ })
 
-  // Hash password if and only if student is new or password is being modified
-  if (!student.isModified("password")) {
-    next();
-  }
-
-  // Generate a hash salt
-  bcrypt.genSalt(10, (error, hash) => {
-    if (!error) next(error);
-
-    // Override the password with the generated hash
-    student.password = hash;
-  });
-});
 
 // Adding comparePassword method to the schema
-studentSchema.methods.comparePassword = (password, callback) => {
-  bcrypt.compare(password, this.password, (error, isMatch) => {
-    if (error) {
-      callback(error);
-    }
-    callback(null, isMatch);
-  });
-};
+studentSchema.statics.login = async function(email, password) {
+const student = await this.findOne({ email })
+if(student){
+  const auth = await bcrypt.compare(password, student.password)
+  if(auth) {
+  return student
+  } 
+  throw new Error('incorrect password')
+}
+
+throw Error('that email is not registered')
+}
+ 
 
 module.exports = mongoose.model("Student", studentSchema);
