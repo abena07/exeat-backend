@@ -1,3 +1,4 @@
+  
 const Student = require("../models/student");
 const studentRouter = require("express").Router();
 const bcrypt = require("bcrypt");
@@ -32,92 +33,71 @@ studentRouter.post("/signup", function (request, response) {
   });
 });
 
-/**
- * Logging User
- * ------------
- * 1. Get user details
- * 2. Find if the user exist
- * 3. Hash the user's password and compare against password stored in the db
- * 4. Generate a token using either user ID or email ==> return random token
- * 5. if user exist, we set an http-only cookie and return {message: "Login success", {userDetails}}
- * 5. if user does not exist, we send {error: "Invalid user or password"}
- *
- * Login is purposely for (authentication and authorization)
- * Authentication ==> Verifying that the user exists in the system
- * Authorization ==> Verifying that the user has the enough permission to perform which ever operation
- */
+
 
 /// to log a student in
-// studentRouter.post("/login", function (request, response, next) {
-//   console.log("loggin in");
-//   const studentID = request.body.studentID;
-//   const password = request.body.password;
-//   const email = request.body.email;
+studentRouter.post("/login", function (request, response, next) {
+  console.log("loggin in");
+  const studentID = request.body.studentID;
+  const password = request.body.password;
+  const email = request.body.email;
 
-//   Student.findOne(
-//     { studentID: studentID, password: password, email: email },
-//     function (err, student) {
-//       if (err) {
-//         console.log(err);
-//         return response.staus(500).send();
+  Student.findOne(
+    { studentID: studentID, password: password, email: email },
+    function (err, student) {
+      if (err) {
+        console.log(err);
+        return response.staus(500).send();
+      }
+      if (!student) {
+        return response.status(404).send();
+      }
+
+      return response.status(200).send("good");
+    }
+  );
+});
+
+// // Login User
+// studentRouter.post("/login", async (request, response) => {
+//   const { studentID, email, password } = request.body;
+//   await Student.findOne({ studentID: studentID, email: email }).exec(
+//     (error, student) => {
+//       if (error) {
+//         response.status(500).send({ error: "Internal Server Error" });
 //       }
+
 //       if (!student) {
-//         return response.status(404).send();
+//         response.status(401).send({ error: "Invalid Credentials" });
 //       }
 
-//       return response.status(200).send("good");
+//       // TODO: Compare Hashed password and set some cookies
+//       // generate a token using jsonwebtoken {email} or {id}
+
+//       try {
+//         const valid = bcrypt.compareSync(password, student.password);
+//         if (!valid) {
+//           response.status(401).send({ error: "Invalid Password" });
+//         }
+
+//         // Set a cookie and send a response
+//         const payload = { email: email, studentID: studentID };
+//         const token = jwt.sign(payload, config.JWT_SECRET);
+//         response.cookie("Authorization", `Bearer ${token}`, {
+//           httpOnly: true,
+//           maxAge: 86_400_000,
+//         });
+
+//         response.send(student);
+//       } catch (excpetion) {
+//         console.log(exception);
+//         response.status(500).send({ error: "Internal Server Error" });
+//       }
 //     }
 //   );
 // });
 
-// Login User
-studentRouter.post("/login", async (request, response) => {
-  const { studentID, email, password } = request.body;
-  Student.findOne({ studentID: studentID }, function(err, student) {
-    // if(err) throw err
-    // (error, student) => {
-    //   if (error) {
-    //     response.status(500).send({ error: "Internal Server Error" });
-    //   }
-
-    //   if (!student) {
-    //     response.status(401).send({ error: "Invalid Credentials" });
-    //   }
-
-    //   // TODO: Compare Hashed password and set some cookies
-    //   // generate a token using jsonwebtoken {email} or {id}
-
-  student.comparePassword(password, function(error, isMatch) {
-    if(error) {
-      response.status(500).send('nope')
-    }
-    console.log('password is', isMatch)
-    response.status(400).send('success')
-  })
-        // const valid = bcrypt.compareSync(password, student.password);
-        // if (!valid) {
-        //   response.status(401).send({ error: "Invalid Password" });
-        // }
-
-        // Set a cookie and send a response
-  //       const payload = { email: email, studentID: studentID };
-  //       const token = jwt.sign(payload, config.JWT_SECRET);
-  //       response.cookie("Authorization", `Bearer ${token}`, {
-  //         httpOnly: true,
-  //         maxAge: 86_400_000,
-  //       });
-
-  //       response.send(student);
-  //     } catch (excpetion) {
-  //       console.log(exception);
-  //       response.status(500).send({ error: "Internal Server Error" });
-  //     }
-  //   }
-  // );
-  })
-});
-
-//get a student by id
+// //get a student by id
 // studentRouter.get("/:studentID", (request, response) => {
 //   let student = Student.find(
 //     (student) => student["studentID"] === request.params.studentID
@@ -141,4 +121,4 @@ studentRouter.post("/login", async (request, response) => {
 //   }
 // });
 
-module.exports = studentRouter;
+module.exports = studentRouter

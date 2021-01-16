@@ -1,4 +1,3 @@
-const { response, request } = require("express");
 const Booking = require("../models/booking");
 const bookingRouter = require("express").Router();
 
@@ -30,29 +29,10 @@ bookingRouter.post("/create", async function (request, response) {
   });
 });
 
-
-// ///get a booking
-// bookingRouter.get("/bookings",(request, response)=>{
-//   let Abookings=Abookings.find(
-//     (Abookings)=>Abookings["bookings"]=== request.params.bookings
-//   )
-
-// if (bookings){
-//   response.status(200).send(bookings)
-    
-// }else{
-//   response.status(400).send("This booking doesn't exist")
-// }})
-
-
-
-
 /// get bookings
-bookingRouter.get("/bookings",(request,response)=>{
-
-  Booking.find({}).then(res => {
-    response.status(200).send(res)
-  })
-  
-})
+bookingRouter.get("/bookings", (request, response) => {
+  Booking.find({}).then((res) => {
+    response.status(200).send(res);
+  });
+});
 module.exports = bookingRouter;
